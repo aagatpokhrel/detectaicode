@@ -1,8 +1,14 @@
+from typing import Dict
+from typing import List
+from typing import Tuple
+
 import numpy as np
-from typing import List, Dict, Tuple
-from .perturbation import perturb_code
-from ..utils.parser import parse_code_tokens
+
 from ..analysis.naturalness import calculate_npr_score
+
+# from ..utils.parser import parse_code_tokens
+from .perturbation import perturb_code
+
 
 class DetectCodeGPT:
     def __init__(self, model, alpha=0.5, beta=0.5, lambda_spaces=3, lambda_newlines=2):

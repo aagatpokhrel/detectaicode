@@ -1,9 +1,14 @@
 import argparse
 from pathlib import Path
-from transformers import AutoModelForCausalLM, AutoTokenizer
+
+from transformers import AutoModelForCausalLM
+from transformers import AutoTokenizer
+
 from .detection.detect import DetectCodeGPT
-from .utils.metrics import calculate_auroc
-from .utils.visualize import plot_detection_results
+
+# from .utils.metrics import calculate_auroc
+# from .utils.visualize import plot_detection_results
+
 
 def main():
     parser = argparse.ArgumentParser(description="DetectCodeGPT: Machine-Generated Code Detection")
@@ -27,22 +32,23 @@ def main():
     human_scores = evaluate_samples(Path(args.human_dir), detector, args.num_samples)
     machine_scores = evaluate_samples(Path(args.machine_dir), detector, args.num_samples)
     
-    # Calculate AUROC
-    auroc = calculate_auroc(human_scores, machine_scores)
-    print(f"Detection AUROC: {auroc:.4f}")
+    print (human_scores, machine_scores)
+    # # Calculate AUROC
+    # auroc = calculate_auroc(human_scores, machine_scores)
+    # print(f"Detection AUROC: {auroc:.4f}")
     
-    # Save and plot results
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(exist_ok=True)
+    # # Save and plot results
+    # output_dir = Path(args.output_dir)
+    # output_dir.mkdir(exist_ok=True)
     
-    plot_detection_results(human_scores, machine_scores, output_dir / "detection_results.png")
+    # plot_detection_results(human_scores, machine_scores, output_dir / "detection_results.png")
     
-    with open(output_dir / "results.txt", "w") as f:
-        f.write(f"AUROC: {auroc:.4f}\n")
-        f.write("Human scores:\n")
-        f.write("\n".join(map(str, human_scores)) + "\n")
-        f.write("Machine scores:\n")
-        f.write("\n".join(map(str, machine_scores)) + "\n")
+    # with open(output_dir / "results.txt", "w") as f:
+    #     f.write(f"AUROC: {auroc:.4f}\n")
+    #     f.write("Human scores:\n")
+    #     f.write("\n".join(map(str, human_scores)) + "\n")
+    #     f.write("Machine scores:\n")
+    #     f.write("\n".join(map(str, machine_scores)) + "\n")
 
 def evaluate_samples(directory: Path, detector, num_samples: int):
     """Evaluate samples from directory and return detection scores."""
