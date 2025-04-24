@@ -4,7 +4,7 @@ from transformers import AutoTokenizer
 from src.detection.detect import DetectCodeGPT
 
 # Load a code generation model
-model_name = "Salesforce/codegen-2B-mono"
+model_name = "Salesforce/codet5-small"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
