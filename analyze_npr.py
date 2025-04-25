@@ -3,6 +3,7 @@ import torch
 
 from data.loader import CodeDataset
 from src.analysis.naturalness import calculate_npr_score
+from src.utils.auroc import calculate_auroc
 
 
 def batch_naturalness_analysis(dataset: CodeDataset, model, tokenizer):
@@ -61,6 +62,13 @@ model.to("cuda" if torch.cuda.is_available() else "cpu")
 dataset = CodeDataset('data/dataset1.csv')
 
 npr_detailed, npr_summary = batch_naturalness_analysis(dataset, model, tokenizer)
+
+labels = (npr_detailed['code_type'] == 'ai').astype(int).tolist()
+scores = npr_detailed['npr_score'].tolist()
+
+# Compute AUROC
+auroc_score = calculate_auroc(scores, labels)
+print(f"\nAUROC Score (based on NPR): {auroc_score:.4f}")
 
 # Save and display
 npr_detailed.to_csv('npr_detailed_results.csv', index=False)
