@@ -5,3 +5,5 @@ tree-sitter-python/
 py-tree-sitter/
 build/
 vendor/
+detailed_results.csv
+summary_statistics.csv

@@ -16,16 +16,28 @@ def batch_analyze(dataset: CodeDataset) -> pd.DataFrame:
     for i in range(len(dataset)):
         sample = dataset[i]
         
-        # Analyze human code
-        human_metrics = analyze_lexical_diversity(sample['human_code'], parser)
-        human_metrics['code_type'] = 'human'
-        human_metrics['solution_num'] = i % 3 + 1  # Track original solution number
+        # Human
+        human_raw = analyze_lexical_diversity(sample['human_code'], parser)
+        human_metrics = {
+            "total_tokens": human_raw["total_tokens"],
+            "zipf.slope": human_raw["zipf"]["slope"],
+            "heaps.b": human_raw["heaps"]["b"],
+            "heaps.k": human_raw["heaps"]["k"],
+            "code_type": "human",
+            "solution_num": i % 3 + 1
+        }
         results.append(human_metrics)
-        
-        # Analyze AI code
-        ai_metrics = analyze_lexical_diversity(sample['ai_code'], parser)
-        ai_metrics['code_type'] = 'ai'
-        ai_metrics['solution_num'] = i % 3 + 1
+
+        # AI
+        ai_raw = analyze_lexical_diversity(sample['ai_code'], parser)
+        ai_metrics = {
+            "total_tokens": ai_raw["total_tokens"],
+            "zipf.slope": ai_raw["zipf"]["slope"],
+            "heaps.b": ai_raw["heaps"]["b"],
+            "heaps.k": ai_raw["heaps"]["k"],
+            "code_type": "ai",
+            "solution_num": i % 3 + 1
+        }
         results.append(ai_metrics)
     
     # Convert to DataFrame
