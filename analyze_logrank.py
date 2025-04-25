@@ -1,14 +1,15 @@
 import pandas as pd
 import torch
+from transformers import AutoModelForCausalLM
+from transformers import AutoTokenizer
 
+from analysis.logrank import calculate_log_rank
 from data.loader import CodeDataset
-from src.analysis.naturalness import calculate_npr_score
-from src.utils.auroc import calculate_auroc
 
 
 def batch_naturalness_analysis(dataset: CodeDataset, model, tokenizer):
     """
-    Analyze NPR naturalness scores for all code samples in the dataset.
+    Analyze log rank scores for all code samples in the dataset.
     
     Args:
         dataset: CodeDataset object
@@ -16,7 +17,7 @@ def batch_naturalness_analysis(dataset: CodeDataset, model, tokenizer):
         tokenizer: Corresponding tokenizer
         
     Returns:
-        DataFrame with NPR scores
+        DataFrame with log rank scores
     """
     results = []
     
@@ -24,32 +25,29 @@ def batch_naturalness_analysis(dataset: CodeDataset, model, tokenizer):
         sample = dataset[i]
         
         # Human code
-        npr_human = calculate_npr_score(sample['human_code'], model, tokenizer)
+        lr_human = calculate_log_rank(sample['human_code'], model, tokenizer)
         results.append({
             'code_type': 'human',
             'solution_num': i % 3 + 1,
-            'npr_score': npr_human
+            'logrank': lr_human
         })
 
         # AI code
-        npr_ai = calculate_npr_score(sample['ai_code'], model, tokenizer)
+        lr_ai = calculate_log_rank(sample['ai_code'], model, tokenizer)
         results.append({
             'code_type': 'ai',
             'solution_num': i % 3 + 1,
-            'npr_score': npr_ai
+            'logrank': lr_ai
         })
 
     df = pd.DataFrame(results)
     
     # Group and summarize
     summary = df.groupby(['code_type', 'solution_num']).agg({
-        'npr_score': ['mean', 'std']
+        'logrank': ['mean', 'std']
     })
     
     return df, summary
-
-from transformers import AutoModelForCausalLM
-from transformers import AutoTokenizer
 
 # Load tokenizer and model
 model_name = "Salesforce/codegen-350M-mono"  # or any other causal model
@@ -58,20 +56,15 @@ model = AutoModelForCausalLM.from_pretrained(model_name)
 model.eval()
 model.to("cuda" if torch.cuda.is_available() else "cpu")
 
-# Run NPR analysis
 dataset = CodeDataset('data/dataset1.csv')
 
-npr_detailed, npr_summary = batch_naturalness_analysis(dataset, model, tokenizer)
+lr_detailed, lr_summary = batch_naturalness_analysis(dataset, model, tokenizer)
 
-labels = (npr_detailed['code_type'] == 'ai').astype(int).tolist()
-scores = npr_detailed['npr_score'].tolist()
-
-# Compute AUROC
-auroc_score = calculate_auroc(scores, labels)
-print(f"\nAUROC Score (based on NPR): {auroc_score:.4f}")
+labels = (lr_detailed['code_type'] == 'ai').astype(int).tolist()
+scores = lr_detailed['logrank'].tolist()
 
 # Save and display
-npr_detailed.to_csv('npr_detailed_results.csv', index=False)
-npr_summary.to_csv('npr_summary_statistics.csv')
-print("\nNPR Summary Statistics:")
-print(npr_summary)
+lr_detailed.to_csv('results/logrank_detailed_results.csv', index=False)
+lr_summary.to_csv('results/logrank_summary_statistics.csv')
+print("\nLog Rank Statistics:")
+print(lr_summary)

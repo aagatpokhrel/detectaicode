@@ -55,8 +55,8 @@ def batch_analyze(dataset: CodeDataset) -> pd.DataFrame:
 
 def save_results(df: pd.DataFrame, summary: pd.DataFrame):
     """Save results to CSV files."""
-    df.to_csv('detailed_results.csv', index=False)
-    summary.to_csv('summary_statistics.csv')
+    df.to_csv('results/detailed_results.csv', index=False)
+    summary.to_csv('results/summary_statistics.csv')
     print("Results saved to detailed_results.csv and summary_statistics.csv")
 
 if __name__ == "__main__":

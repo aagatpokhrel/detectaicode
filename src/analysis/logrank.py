@@ -2,9 +2,9 @@ import numpy as np
 import torch
 
 
-def calculate_npr_score(code: str, model, tokenizer) -> float:
+def calculate_log_rank(code: str, model, tokenizer) -> float:
     """
-    Calculate Normalized Perturbed Log Rank (NPR) score for code.
+    Calculate log rank for the code.
     """
     inputs = tokenizer(code, return_tensors="pt", truncation=True)
     input_ids = inputs.input_ids.to(model.device)
@@ -26,9 +26,4 @@ def calculate_npr_score(code: str, model, tokenizer) -> float:
     log_ranks = torch.log(ranks.float())
     avg_log_rank = log_ranks.mean().item()
 
-    # Normalize: divide by max possible log rank
-    max_rank = probs.size(-1)  # vocab size
-    max_log_rank = np.log(max_rank)
-    normalized_score = avg_log_rank / max_log_rank
-
-    return normalized_score
+    return avg_log_rank
