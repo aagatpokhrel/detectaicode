@@ -1,7 +1,11 @@
-from collections import Counter
 import math
-from typing import List, Dict, Tuple
+from collections import Counter
+from typing import Dict
+from typing import List
+from typing import Tuple
+
 from tree_sitter import Node
+
 
 def analyze_lexical_diversity(code: str, parser) -> Dict:
     """
@@ -37,8 +41,9 @@ def analyze_lexical_diversity(code: str, parser) -> Dict:
 def collect_tokens(node: Node, code: str) -> List[str]:
     """Recursively collect tokens from AST."""
     tokens = []
+    code_bytes = code.encode("utf8")
     if node.child_count == 0:
-        token = code[node.start_byte:node.end_byte].decode('utf8')
+        token = code_bytes[node.start_byte:node.end_byte].decode('utf8')
         tokens.append(token)
     else:
         for child in node.children:
