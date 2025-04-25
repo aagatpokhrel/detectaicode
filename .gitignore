@@ -7,3 +7,5 @@ build/
 vendor/
 detailed_results.csv
 summary_statistics.csv
+npr_detailed_results.csv
+npr_summary_statistics.csv
