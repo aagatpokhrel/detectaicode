@@ -11,7 +11,7 @@ from .perturbation import perturb_code
 
 
 class DetectCodeGPT:
-    def __init__(self, model, alpha=0.5, beta=0.5, lambda_spaces=3, lambda_newlines=2):
+    def __init__(self, model, tokenizer, alpha=0.5, beta=0.5, lambda_spaces=3, lambda_newlines=2):
         """
         Initialize DetectCodeGPT detector.
         
@@ -23,6 +23,7 @@ class DetectCodeGPT:
             lambda_newlines: Poisson parameter for newline insertion
         """
         self.model = model
+        self.tokenizer = tokenizer
         self.alpha = alpha
         self.beta = beta
         self.lambda_spaces = lambda_spaces
@@ -41,7 +42,7 @@ class DetectCodeGPT:
             Tuple of (is_machine_generated, detection_score)
         """
         # Calculate original NPR score
-        orig_score = calculate_npr_score(code, self.model)
+        orig_score = calculate_npr_score(code, self.model, self.tokenizer)
         
         # Generate perturbations and calculate their scores
         perturbed_scores = []
@@ -53,7 +54,7 @@ class DetectCodeGPT:
                 lambda_spaces=self.lambda_spaces,
                 lambda_newlines=self.lambda_newlines
             )
-            perturbed_score = calculate_npr_score(perturbed_code, self.model)
+            perturbed_score = calculate_npr_score(perturbed_code, self.model, self.tokenizer)
             perturbed_scores.append(perturbed_score)
         
         # Calculate mean perturbed score

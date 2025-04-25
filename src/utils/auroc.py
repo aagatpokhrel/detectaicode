@@ -44,5 +44,5 @@ def calculate_auroc(scores, labels):
     tpr_array = np.array(tpr_list)
 
     # Trapezoidal integration of TPR over FPR
-    auroc = np.trapz(tpr_array, fpr_array)
+    auroc = np.trapezoid(tpr_array, fpr_array)
     return auroc

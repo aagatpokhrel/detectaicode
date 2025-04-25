@@ -15,6 +15,7 @@ detector = DetectCodeGPT(model=model, tokenizer=tokenizer)
 human_code = """
 def factorial(n):
     if n == 0:
+    
         return 1
     else:
         return n * factorial(n-1)
@@ -34,4 +35,4 @@ is_machine, score = detector.detect(human_code)
 print(f"Human code - Score: {score:.2f}, Is machine: {is_machine}")
 
 is_machine, score = detector.detect(machine_code)
-print(f"Machine code - Score: {score:.2f}, Is machine: {is_machine}")
+print(f"Machine code - Score: {score}, Is machine: {is_machine}")
