@@ -8,3 +8,4 @@ tqdm>=4.0.0
 pandas
 tree-sitter
 tree-sitter-language-pack
+seaborn

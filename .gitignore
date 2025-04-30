@@ -1,5 +1,6 @@
 .venv
 .env
+test.py
 **/__pycache__/
 tree-sitter-python/
 py-tree-sitter/

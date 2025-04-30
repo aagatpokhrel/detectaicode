@@ -3,8 +3,9 @@ import torch
 from transformers import AutoModelForCausalLM
 from transformers import AutoTokenizer
 
-from analysis.logrank import calculate_log_rank
 from data.loader import CodeDataset
+from src.analysis.logrank import calculate_log_rank
+from src.analysis.logrank import calculate_log_rank_by_category
 
 
 def batch_naturalness_analysis(dataset: CodeDataset, model, tokenizer):
@@ -49,6 +50,33 @@ def batch_naturalness_analysis(dataset: CodeDataset, model, tokenizer):
     
     return df, summary
 
+def batch_analyze(dataset: CodeDataset, model, tokenizer):
+    """
+    Analyze log rank scores by category for all code samples.
+    """
+    all_results = []
+
+    for i in range(len(dataset)):
+        sample = dataset[i]
+        for code_type in ['human_code', 'ai_code']:
+            cat_scores = calculate_log_rank_by_category(sample[code_type], model, tokenizer)
+            for cat, score in cat_scores.items():
+                all_results.append({
+                    'code_type': 'human' if code_type == 'human_code' else 'ai',
+                    'solution_num': i % 3 + 1,
+                    'category': cat,
+                    'logrank': score
+                })
+
+    df = pd.DataFrame(all_results)
+    
+    # Group and summarize
+    summary = df.groupby(['code_type', 'category']).agg({
+        'logrank': ['mean', 'std']
+    }).reset_index()
+
+    return df, summary
+
 # Load tokenizer and model
 model_name = "Salesforce/codegen-350M-mono"  # or any other causal model
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -58,7 +86,7 @@ model.to("cuda" if torch.cuda.is_available() else "cpu")
 
 dataset = CodeDataset('data/dataset1.csv')
 
-lr_detailed, lr_summary = batch_naturalness_analysis(dataset, model, tokenizer)
+lr_detailed, lr_summary = batch_analyze(dataset, model, tokenizer)
 
 labels = (lr_detailed['code_type'] == 'ai').astype(int).tolist()
 scores = lr_detailed['logrank'].tolist()

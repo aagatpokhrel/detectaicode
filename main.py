@@ -1,6 +1,7 @@
 from transformers import AutoModelForCausalLM
 from transformers import AutoTokenizer
 
+from data.loader import CodeDataset
 from src.detection.detect import DetectCodeGPT
 
 # Load a code generation model
@@ -11,28 +12,22 @@ model = AutoModelForCausalLM.from_pretrained(model_name)
 # Initialize detector
 detector = DetectCodeGPT(model=model, tokenizer=tokenizer)
 
-# Example code to analyze
-human_code = """
-def factorial(n):
-    if n == 0:
-    
-        return 1
-    else:
-        return n * factorial(n-1)
-"""
+dataset = CodeDataset('data/dataset1.csv')
 
-machine_code = """
-def factorial(n):
-    if not isinstance(n, int):
-        raise TypeError("Input must be an integer")
-    if n < 0:
-        raise ValueError("Input must be non-negative")
-    return 1 if n == 0 else n * factorial(n - 1)
-"""
+scores = []
+labels = []
 
-# Detect machine-generated code
-is_machine, score = detector.detect(human_code)
-print(f"Human code - Score: {score:.2f}, Is machine: {is_machine}")
+for item in dataset:
+    # For human code (label 0)
+    human_code = item['human_code']
+    _, human_score = detector.detect(human_code)  # get detection score
+    scores.append(human_score)
+    labels.append(0)
 
-is_machine, score = detector.detect(machine_code)
-print(f"Machine code - Score: {score}, Is machine: {is_machine}")
+    # For AI code (label 1)
+    ai_code = item['ai_code']
+    _, ai_score = detector.detect(ai_code)
+    scores.append(ai_score)
+    labels.append(1)
+
+print (labels, scores)

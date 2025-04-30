@@ -71,13 +71,15 @@ def analyze_zipf_law(token_counts: Counter) -> Dict:
     
     return {
         "slope": slope,
-        "rank_freq_pairs": list(zip(ranks, frequencies))
+        "rank_freq_pairs": list(zip(log_ranks, log_freqs))
     }
 
 def analyze_heaps_law(tokens: List[str]) -> Dict:
     """Analyze Heaps' law for vocabulary growth."""
     vocabulary = set()
     growth_curve = []
+    log_N = []
+    log_V = []
     
     for i, token in enumerate(tokens):
         vocabulary.add(token)
@@ -99,5 +101,6 @@ def analyze_heaps_law(tokens: List[str]) -> Dict:
     return {
         "b": b,
         "k": k,
-        "growth_curve": growth_curve
+        "growth_curve": growth_curve,
+        "log_pairs": list(zip(log_N, log_V))
     }
