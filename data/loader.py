@@ -27,6 +27,9 @@ class CodeDataset(Dataset):
         return len(self.human_code)  # All lists will be same length
     
     def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return [self[i] for i in range(*idx.indices(len(self)))]
+        
         return {
             'human_code': self.human_code[idx],
             'ai_code': self.ai_code[idx]

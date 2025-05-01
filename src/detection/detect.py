@@ -50,7 +50,7 @@ class DetectCodeGPT:
         mean_perturbed = np.mean(perturbed_log_ranks)
         return mean_perturbed / orig_log_rank
     
-    def detect(self, code: str, num_perturbations: int = 20, threshold: float = None) -> Tuple[bool, float]:
+    def detect(self, code: str, num_perturbations: int = 10, threshold: float = None) -> Tuple[bool, float]:
         """
         Detect if code is machine-generated.
         
