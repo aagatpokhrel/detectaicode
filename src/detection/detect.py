@@ -48,7 +48,7 @@ class DetectCodeGPT:
                 perturbed_log_ranks.append(logrank_value)
 
         mean_perturbed = np.mean(perturbed_log_ranks)
-        return mean_perturbed - orig_log_rank
+        return mean_perturbed / orig_log_rank
     
     def detect(self, code: str, num_perturbations: int = 20, threshold: float = None) -> Tuple[bool, float]:
         """

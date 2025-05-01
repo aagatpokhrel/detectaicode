@@ -1,6 +1,8 @@
 .venv
 .env
 test.py
+aicode.py
+pycode.py
 **/__pycache__/
 tree-sitter-python/
 py-tree-sitter/
