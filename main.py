@@ -20,7 +20,7 @@ dataset = CodeDataset('data/dataset3.csv')
 
 # Collect records: code, score, label
 records = []
-for item in dataset[:10]:
+for item in dataset:
     # Human code
     human_code = item['human_code']
     _, human_score = detector.detect(human_code)

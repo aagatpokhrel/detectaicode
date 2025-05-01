@@ -3,6 +3,7 @@
 test.py
 aicode.py
 pycode.py
+output_scores.csv
 **/__pycache__/
 tree-sitter-python/
 py-tree-sitter/
